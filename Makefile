@@ -3,7 +3,9 @@ FILE_SYSTEM_DIR = "fs"
 FILE_SYSTEM_RELEASE = "bullseye"
 IMG_SIZE = "10G"
 IMG_TYPE =
-IMG = 
+IMG =
+DEBUG =
+KERNEL = "linux/arch/x86_64/boot/bzImage"
 ifndef IMG_TYPE
 	IMG_TYPE = "raw"
 	IMG = "rootfs.img"
@@ -37,6 +39,34 @@ build:
 	@# 开始编译内核
 	@ cd linux 
 	@ make -j$(nproc)
+
+run:
+	@ if [ $(DEBUG) == 1 ]; \
+		then \
+			$(call run_debug); \
+		else
+			$(call run_release); \
+		fi
+
+define run_debug
+	@ qemu-system-x86_64 \
+		-smp 1 \
+		-m 1024 \
+		-kernel $(KERNEL)./linux/arch/x86_64/boot/bzImage \
+		-drive file=$(IMG),format=$(IMG_TYPE),index=1,media=disk,if=virtio \
+		-append "root=/dev/sda rw console=ttyS0" \
+		-nographic -s -S
+endef
+
+define run_release
+	@ qemu-system-x86_64 \
+		-smp 1 \
+		-m 1024 \
+		-kernel $(KERNEL)./linux/arch/x86_64/boot/bzImage \
+		-drive file=$(IMG),format=$(IMG_TYPE),index=1,media=disk,if=virtio \
+		-append "root=/dev/sda rw console=ttyS0" \
+		-nographic
+endef
 
 define get_kernel
 	@ if [ ! -d "linux" ]; \
