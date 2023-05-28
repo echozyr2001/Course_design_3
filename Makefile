@@ -69,7 +69,7 @@ checkout:
 	@ sudo apt install -y flex bison
 
 setup:
-	@ git clone --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+	@ git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 
 build:
 	@# 复制config文件
