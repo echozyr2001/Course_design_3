@@ -65,15 +65,15 @@ build_fs:
 
 checkout:
 	# TODO：逐步添加
-	@sudo apt update
-	@sudo apt install -y flex bison
+	@ sudo apt update
+	@ sudo apt install -y flex bison
 
 setup:
-	@git clone --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+	@ git clone --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 
 build:
-	@cd linux
-	@export ARCH=x86
-	# TODO：将已经配置好的.config文件放在目录中
-	# 在该处导入
-	@make -j$(nproc)
+	@# 复制config文件
+	@ cp .config linux
+	@# 开始编译内核
+	@ cd linux 
+	@ make -j$(nproc)
