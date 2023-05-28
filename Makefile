@@ -28,7 +28,8 @@ checkout:
 	@ sudo apt install -y flex bison
 
 setup:
-	@ git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+	@# 获取内核
+	$(call get_kernel)
 
 build:
 	@# 复制config文件
@@ -36,6 +37,13 @@ build:
 	@# 开始编译内核
 	@ cd linux 
 	@ make -j$(nproc)
+
+define get_kernel
+	@ if [ ! -d "linux" ]; \
+		then \
+			git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+		fi
+endef
 
 define mk_fs
 	@ if [ ! -d $(FILE_SYSTEM_DIR) ]; \
