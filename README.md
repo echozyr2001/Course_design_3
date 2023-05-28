@@ -118,19 +118,19 @@ $ sudo qemu-nbd -d /dev/nbd0
 ```shell
 # qcow2格式镜像
 $ qemu-system-x86_64 \
-	-kernel ./linux/arch/x86_64/boot/bzImage \
 	-smp 1 \
+    -m 1024 \
+	-kernel ./linux/arch/x86_64/boot/bzImage \
 	-drive file="./rootfs.qcow2",format=qcow2,index=1,media=disk,if=virtio \
-	-hda ./rootfs.qcow2 \
 	-append "root=/dev/sda rw console=ttyS0" \
 	-nographic
 
 # raw格式镜像
 $ qemu-system-x86_64 \
-	-kernel ./linux/arch/x86_64/boot/bzImage \
 	-smp 1 \
+    -m 1024 \
+	-kernel ./linux/arch/x86_64/boot/bzImage \
 	-drive file="./rootfs.img",format=raw,index=1,media=disk,if=virtio
-	-hda ./rootfs.img
 	-append "root=/dev/sda rw console=ttyS0" \
 	-nographic
 ```
@@ -144,10 +144,10 @@ $ qemu-system-x86_64 \
 ```shell
 # qcow2格式镜像
 $ qemu-system-x86_64 \
-	-kernel ./linux/arch/x86_64/boot/bzImage \
 	-smp 1 \
+    -m 1024 \
+	-kernel ./linux/arch/x86_64/boot/bzImage \
 	-drive file="./rootfs.qcow2",format=qcow2,index=1,media=disk,if=virtio \
-	-hda ./rootfs.qcow2 \
 	-append "root=/dev/sda rw console=ttyS0" \
 	-nographic -s -S # <===这里
 ```
