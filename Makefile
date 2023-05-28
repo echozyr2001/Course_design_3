@@ -11,18 +11,6 @@ else
 	IMG = "rootfs.$(IMG_TYPE)"
 endif
 
-# TODO：整理
-check-%:
-	@if [ "$($*)" = "" ]; \
-	then \
-		echo "dsdsdsd"; \
-	else \
-		echo "$*"; \
-	fi
-
-__test:
-	echo "test"
-
 define mk_fs
 	@ if [ ! -d $(FILE_SYSTEM_DIR) ]; \
 		then \
