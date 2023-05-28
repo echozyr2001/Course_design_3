@@ -11,6 +11,32 @@ else
 	IMG = "rootfs.$(IMG_TYPE)"
 endif
 
+build_fs:
+	@# 创建目录
+	$(call mk_fs)
+	@# 创建镜像
+	$(call create_img)
+	@# 挂载镜像
+	$(call mount_img)
+	@# 安装Debian文件
+	$(call install_fs)
+	# TODO：逐步添加
+
+checkout:
+	# TODO：逐步添加
+	@ sudo apt update
+	@ sudo apt install -y flex bison
+
+setup:
+	@ git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+
+build:
+	@# 复制config文件
+	@ cp .config linux
+	@# 开始编译内核
+	@ cd linux 
+	@ make -j$(nproc)
+
 define mk_fs
 	@ if [ ! -d $(FILE_SYSTEM_DIR) ]; \
 		then \
@@ -39,29 +65,3 @@ endef
 define install_fs
 	@ sudo debootstrap --arch $(ARCH) $(FILE_SYSTEM_RELEASE) $(FILE_SYSTEM_DIR)
 endef
-
-build_fs:
-	@# 创建目录
-	$(call mk_fs)
-	@# 创建镜像
-	$(call create_img)
-	@# 挂载镜像
-	$(call mount_img)
-	@# 安装Debian文件
-	$(call install_fs)
-	# TODO：逐步添加
-
-checkout:
-	# TODO：逐步添加
-	@ sudo apt update
-	@ sudo apt install -y flex bison
-
-setup:
-	@ git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-
-build:
-	@# 复制config文件
-	@ cp .config linux
-	@# 开始编译内核
-	@ cd linux 
-	@ make -j$(nproc)
