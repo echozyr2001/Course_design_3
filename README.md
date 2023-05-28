@@ -6,7 +6,7 @@
 
 ```bash
 # 获取最新Linux内核源码
-$ git clone --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+$ git clone --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 # 进入源码目录
 $ cd linux
 # 指定编译架构
