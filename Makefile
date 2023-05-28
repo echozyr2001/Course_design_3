@@ -41,7 +41,10 @@ build:
 define get_kernel
 	@ if [ ! -d "linux" ]; \
 		then \
-			git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+			git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git; \
+		else \
+			cd linux; \
+			git pull; \
 		fi
 endef
 
