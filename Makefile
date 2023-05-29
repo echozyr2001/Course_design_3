@@ -42,18 +42,19 @@ build:
 	@ make -j$(nproc)
 
 run:
-	@ if [ $(DEBUG) == 1 ]; \
-		then \
-			$(call run_debug); \
-		else
-			$(call run_release); \
-		fi
+	# if [ $(DEBUG) == 1 ]; \
+	# 	then \
+	# 		$(call run_debug); \
+	# 	else
+	# 		$(call run_release); \
+	# 	fi
+	$(call run_release)
 
 define run_debug
 	@ qemu-system-x86_64 \
 		-smp 1 \
 		-m 1024 \
-		-kernel $(KERNEL)./linux/arch/x86_64/boot/bzImage \
+		-kernel $(KERNEL) \
 		-drive file=$(IMG),format=$(IMG_TYPE),index=1,media=disk,if=virtio \
 		-append "root=/dev/sda rw console=ttyS0" \
 		-nographic -s -S
@@ -63,7 +64,7 @@ define run_release
 	@ qemu-system-x86_64 \
 		-smp 1 \
 		-m 1024 \
-		-kernel $(KERNEL)./linux/arch/x86_64/boot/bzImage \
+		-kernel $(KERNEL) \
 		-drive file=$(IMG),format=$(IMG_TYPE),index=1,media=disk,if=virtio \
 		-append "root=/dev/sda rw console=ttyS0" \
 		-nographic
