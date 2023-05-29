@@ -4,7 +4,6 @@ FILE_SYSTEM_RELEASE = "bullseye"
 IMG_SIZE = "10G"
 IMG_TYPE =
 IMG =
-DEBUG =
 KERNEL = "linux/arch/x86_64/boot/bzImage"
 ifndef IMG_TYPE
 	IMG_TYPE = "raw"
@@ -25,6 +24,9 @@ umount:
 	@ sudo umount ./fs/dev
 	@ sudo umount ./fs/proc
 	@ sudo umount ./fs
+
+chroot: mount
+	@ sudo chroot fs
 
 # TODO：这里需要调整，在创建qcow2类型镜像时出错
 build_fs:
@@ -55,13 +57,22 @@ build:
 	@ make -j$(nproc)
 
 run:
-	# if [ $(DEBUG) == 1 ]; \
-	# 	then \
-	# 		$(call run_debug); \
-	# 	else
-	# 		$(call run_release); \
-	# 	fi
-	$(call run_debug)
+	@ qemu-system-x86_64 \
+		-smp 1 \
+		-m 1024 \
+		-kernel $(KERNEL) \
+		-drive file=$(IMG),format=$(IMG_TYPE) \
+		-append "root=/dev/sda rw console=ttyS0" \
+		-nographic
+
+debug:
+	@ qemu-system-x86_64 \
+		-smp 1 \
+		-m 1024 \
+		-kernel $(KERNEL) \
+		-drive file=$(IMG),format=$(IMG_TYPE) \
+		-append "root=/dev/sda rw console=ttyS0" \
+		-nographic -s -S
 
 # define run_debug
 # 	@ qemu-system-x86_64 \
@@ -72,25 +83,6 @@ run:
 # 		-append "root=/dev/sda rw console=ttyS0" \
 # 		-nographic -s -S
 # endef
-define run_debug
-	@ qemu-system-x86_64 \
-		-smp 1 \
-		-m 1024 \
-		-kernel $(KERNEL) \
-		-drive file=$(IMG),format=$(IMG_TYPE) \
-		-append "root=/dev/sda rw console=ttyS0" \
-		-nographic
-endef
-
-define run_release
-	@ qemu-system-x86_64 \
-		-smp 1 \
-		-m 1024 \
-		-kernel $(KERNEL) \
-		-drive file=$(IMG),format=$(IMG_TYPE),index=1,media=disk,if=virtio \
-		-append "root=/dev/sda rw console=ttyS0" \
-		-nographic
-endef
 
 define get_kernel
 	@ if [ ! -d "linux" ]; \
