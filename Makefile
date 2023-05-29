@@ -13,6 +13,19 @@ else
 	IMG = "rootfs.$(IMG_TYPE)"
 endif
 
+# TODO：暂时只能挂载raw类型
+mount:
+	@ sudo mount -o loop ./rootfs.img ./fs
+	@ sudo mount --bind /dev ./fs/dev
+	@ sudo mount --bind /dev/pts ./fs/dev/pts
+	@ sudo mount --bind /proc ./fs/proc
+
+umount:
+	@ sudo umount ./fs/dev/pts
+	@ sudo umount ./fs/dev
+	@ sudo umount ./fs/proc
+	@ sudo umount ./fs
+
 # TODO：这里需要调整，在创建qcow2类型镜像时出错
 build_fs:
 	@# 创建目录
@@ -66,7 +79,7 @@ define run_debug
 		-kernel $(KERNEL) \
 		-drive file=$(IMG),format=$(IMG_TYPE) \
 		-append "root=/dev/sda rw console=ttyS0" \
-		-nographic -s -S
+		-nographic
 endef
 
 define run_release
