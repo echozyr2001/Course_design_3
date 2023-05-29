@@ -60,8 +60,8 @@ $ pat install vim sudo -y
 $ adduser kn
 $ gpasswd -a kn sudo
 # 卸载设备
-$ sudo umount ./fs/dev
 $ sudo umount ./fs/dev/pts
+$ sudo umount ./fs/dev
 $ sudo umount ./fs/proc
 $ sudo umount ./fs
 # 权限问题？？？
@@ -104,8 +104,8 @@ $ pat install vim sudo -y
 $ adduser kn
 $ gpasswd -a kn sudo
 # 卸载设备
-$ sudo umount ./fs/dev
 $ sudo umount ./fs/dev/pts
+$ sudo umount ./fs/dev
 $ sudo umount ./fs/proc
 $ sudo umount ./fs
 # 将nbd设备释放
