@@ -50,12 +50,21 @@ run:
 	# 	fi
 	$(call run_release)
 
+# define run_debug
+# 	@ qemu-system-x86_64 \
+# 		-smp 1 \
+# 		-m 1024 \
+# 		-kernel $(KERNEL) \
+# 		-drive file=$(IMG),format=$(IMG_TYPE),index=1,media=disk,if=virtio \
+# 		-append "root=/dev/sda rw console=ttyS0" \
+# 		-nographic -s -S
+# endef
 define run_debug
 	@ qemu-system-x86_64 \
 		-smp 1 \
 		-m 1024 \
 		-kernel $(KERNEL) \
-		-drive file=$(IMG),format=$(IMG_TYPE),index=1,media=disk,if=virtio \
+		-hda$(IMG) \
 		-append "root=/dev/sda rw console=ttyS0" \
 		-nographic -s -S
 endef
