@@ -3,3 +3,4 @@ linux/
 .vscode/
 
 rootfs.*
+.DS_Store
