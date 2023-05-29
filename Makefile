@@ -18,15 +18,13 @@ mount:
 	@ sudo mount --bind /dev ./fs/dev
 	@ sudo mount --bind /dev/pts ./fs/dev/pts
 	@ sudo mount --bind /proc ./fs/proc
+	@ sudo chroot fs
 
 umount:
 	@ sudo umount ./fs/dev/pts
 	@ sudo umount ./fs/dev
 	@ sudo umount ./fs/proc
 	@ sudo umount ./fs
-
-chroot: mount
-	@ sudo chroot fs
 
 # TODO：这里需要调整，在创建qcow2类型镜像时出错
 build_fs:
