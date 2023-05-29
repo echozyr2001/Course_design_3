@@ -13,6 +13,7 @@ else
 	IMG = "rootfs.$(IMG_TYPE)"
 endif
 
+# TODO：这里需要调整，在创建qcow2类型镜像时出错
 build_fs:
 	@# 创建目录
 	$(call mk_fs)
