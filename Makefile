@@ -95,12 +95,12 @@ define mount_img
 	@ if [ $(IMG_TYPE) == "raw" ]; \
 		then \
 			@# 挂载row类型
-			@ sudo mount -o loop $(IMG) $(FILE_SYSTEM_DIR)
+			@ sudo mount -o loop $(IMG) $(FILE_SYSTEM_DIR); \
 		else \
 			@# 挂载qcow2类型
-			@ sudo modprobe nbd max_part=8
-			@ sudo qemu-nbd -c /dev/nbd0 $(IMG)
-			@ sudo mount /dev/nbd0 $(FILE_SYSTEM_DIR)
+			@ sudo modprobe nbd max_part=8; \
+			@ sudo qemu-nbd -c /dev/nbd0 $(IMG); \
+			@ sudo mount /dev/nbd0 $(FILE_SYSTEM_DIR); \
 		fi
 endef
 
