@@ -48,7 +48,7 @@ run:
 	# 	else
 	# 		$(call run_release); \
 	# 	fi
-	$(call run_release)
+	$(call run_debug)
 
 # define run_debug
 # 	@ qemu-system-x86_64 \
