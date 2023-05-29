@@ -64,7 +64,7 @@ define run_debug
 		-smp 1 \
 		-m 1024 \
 		-kernel $(KERNEL) \
-		-hda$(IMG) \
+		-drive file=$(IMG),format=$(IMG_TYPE) \
 		-append "root=/dev/sda rw console=ttyS0" \
 		-nographic -s -S
 endef
