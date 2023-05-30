@@ -7,14 +7,11 @@ $ ls -l /dev/fuse
 crw-rw-rw- root root 0 B Thu Nov 18 22:24:32 2021 /dev/fuse
 ```
 
- wiki 上对 FUSE 的 `ls -l /tmp/fuse` 命令的演示图：
+所谓“用户态文件系统”，是指一个文件系统的 data 和 metadata 都是由用户态的进程提供的（这种进程被称为"**daemon**"）[^2]。
 
 ![image](https://github.com/echozyr2001/Course_design_3/raw/main/notes/png/1.png)
 
-1. 一个用户态文件系统，挂载点为`/tmp/fuse`，用户态二进制程序为`./hello`；
-2. 当执行`ls -l /tmp/fuse`时流程如下：
-   * IO 请求首先进入内核，通过 VFS 传递给内核 FUSE 文件系统模块；
-   * 内核 FUSE 模块将请求发送到用户态，由`./hello`程序接收并处理。处理完成后响应远路返回；
+用户态文件系统不代表其完全不需要内核的参与，因为在 Linux 中，对文件的访问都是统一通过 VFS 层提供的内核接口进行的[^2]。当一个进程访问文件时，请求首先到达 VFS ，由 VFS 判断其属于某个用户态文件系统，然后将请求转发给内核 FUSE 模块，FUSE模块将请求转换为与 daemon 约定的协议格式，传递给 daemon 进程，daemon 进程处理之后，响应原路返回。
 
 ## FUSE协议格式
 
@@ -78,3 +75,4 @@ struct fuse_out_header {
 ## 参考文献
 
 [^1]: https://github.com/0voice/kernel_awsome_feature/blob/main/%E8%AF%A6%E8%A7%A3%20FUSE%20%E7%94%A8%E6%88%B7%E6%80%81%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F.md
+[^2]: https://zhuanlan.zhihu.com/p/143256077?utm_source=qq&utm_medium=social&utm_oi=730740411601014784
