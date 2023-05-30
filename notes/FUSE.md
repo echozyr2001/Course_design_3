@@ -1,6 +1,24 @@
+## FSUE基本原理
+
+FUSE 模块其实是一个简单的客户端-服务器协议，它的客户端是内核，用户态的守护进程就是服务端，内核模块会通过 VFS 暴露一个`/dev/fuse`的设备文件[^1]，这个虚拟设备文件就是内核模块和用户程序的数据通过路。
+
+```shell
+$ ls -l /dev/fuse
+crw-rw-rw- root root 0 B Thu Nov 18 22:24:32 2021 /dev/fuse
+```
+
+ wiki 上对 FUSE 的 `ls -l /tmp/fuse` 命令的演示图：
+
+![image](https://github.com/echozyr2001/Course_design_3/raw/main/notes/png/1.png)
+
+1. 一个用户态文件系统，挂载点为`/tmp/fuse`，用户态二进制程序为`./hello`；
+2. 当执行`ls -l /tmp/fuse`时流程如下：
+   * IO 请求首先进入内核，通过 VFS 传递给内核 FUSE 文件系统模块；
+   * 内核 FUSE 模块将请求发送到用户态，由`./hello`程序接收并处理。处理完成后响应远路返回；
+
 ## FUSE协议格式
 
-FUSE协议是客户端-服务器协议，与http协议类似，每一个请求都有一个请求头和请求体，每一个响应都有一个响应头和响应体。
+FUSE协议是客户端-服务器协议，与 http 协议类似，每一个请求都有一个请求头和请求体，每一个响应都有一个响应头和响应体。
 
 ### FUSE请求包
 
