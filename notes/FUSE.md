@@ -1,56 +1,62 @@
-## FUSE协议格式[^1]
+## FUSE协议格式
+
+FUSE协议是客户端-服务器协议，与http协议类似，每一个请求都有一个请求头和请求体，每一个响应都有一个响应头和响应体。
 
 ### FUSE请求包
 
-FUSE请求包分为两部分：
-
-1. `Header`：这是所有请求共用的，所有请求的头部至少都有这个结构体，`Header`结构体用于描述整个FUSE请求，通过其中的字段来区分请求类型；
-2.  `Payload`：该结构体每个IO类型是不同的，如`read`请不包含该结构体，`write`请求包含该结构体，因为`write`请求是携带数据的；
+请求头的大小是固定的，定义如下：
 
 ```c
-type inHeader struct {
-  Len    uint32
-  Opcode uint32
-  Unique uint64
-  Nodeid uint64
-  Uid    uint32
-  Gid    uint32
-  Pid    uint32
-  _      uint32
-}
+struct fuse_in_header {
+	uint32_t	len; /* 数据长度：包括请求头和请求体 */
+	uint32_t	opcode; /* 操作码：区别请求的类型 */
+	uint64_t	unique; /* 唯一请求id */
+	uint64_t	nodeid; /* 请求针对的文件id */
+	uint32_t	uid; /* 请求进程的 uid */
+	uint32_t	gid; /* 请求进程的 gid */
+	uint32_t	pid; /* 请求进程的 pid */
+	uint16_t	total_extlen;
+	uint16_t	padding;
+};
 ```
 
-* Len：整个请求的字节数长度（`Header` + `Payload`）；
-* Opcode：请求的类型，如`read`、`write`等；
-* Unique：请求唯一标识；
-* Nodeid：请求针对的文件nodeid；
-* Uid：文件/文件夹操作的进程的用户 ID；
-* Gid：文件/文件夹操作的进程的用户组 ID；
-* Pid：文件/文件夹操作的进程的进程 ID；
+在请求头之后，紧跟着请求体（如果有），请求体长度可变，其具体类型通过`opcode`来确定。
+
+下面以rename操作为例给出数据的解析过程[^1]：
+
+rename 的 buf 结构长这样 `{fuse_in_header}{fuse_rename_in}{oldname}{newname}`
+
+1. 读取 header，直接读取 `fuse_in_header`，类似这样： `struct fuse_in_header *in = (struct fuse_in_header *) buf;`
+2. 判断 opcode 为 15，接下来读取 `fuse_rename_in` 类似这样： `buf += sizeof(struct fuse_in_header);struct fuse_rename_in *arg = (struct fuse_read_in *) buf;`
+3. 除此之外，它的结构还跟着 oldname 和 newname，分别这样读取 `char* oldname = (((char*)buf) + sizeof(*buf));char* newname = oldname + strlen(oldname) + 1;`
+
+```c
+void handle(void *buf) {
+  struct fuse_in_header *in = (struct fuse_in_header *) buf;
+  if in.opcode == 15 {
+    buf += sizeof(struct fuse_in_header);
+	  struct fuse_rename_in *arg = (struct fuse_rename_in *) buf;
+    char* oldname = (((char*)buf) + sizeof(*buf));
+    char* newname = oldname + strlen(oldname) + 1;
+    ...
+  }
+}
+```
 
 ### FUSE响应包
 
-FUSE响应包也包含`Header`和`Payload`两部分，与FUSE请求包基本相同：
-
-1. `Header`：这是所有请求共用的，所有请求的头部至少都有这个结构体，`Header`结构体用于描述整个FUSE请求，通过其中的字段来区分请求类型；
-2.  `Payload`：该结构体每个IO类型是不同的，如`read`请不包含该结构体，`write`请求包含该结构体，因为`write`请求是携带数据的；
+响应头的大小也是固定的，定义如下：
 
 ```C
-type outHeader struct {
-  Len    uint32
-  Error  int32
-  Unique uint64
-}
+struct fuse_out_header {
+	uint32_t	len; /* 整个响应的字节数长度 */
+	int32_t		error; /* 响应错误码，成功返回0 */
+	uint64_t	unique; /* 与请求保持一致的唯一id */
+};
 ```
 
-- Len：整个响应的字节数长度（ `Header` + `Payload` ）；
-- Error：响应错误码，成功返回 0；
-- Unique：对应者请求的唯一标识，和请求对应；
-
-
-
-
+响应头后面紧跟响应体（如果有），如果错误码不为 0，则不应该包含响应体。具体如何处理响应体与处理请求体类似，就不再赘述。
 
 ## 参考文献
 
-[^1]: https://zhuanlan.zhihu.com/p/378429806
+[^1]: https://github.com/0voice/kernel_awsome_feature/blob/main/%E8%AF%A6%E8%A7%A3%20FUSE%20%E7%94%A8%E6%88%B7%E6%80%81%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F.md
