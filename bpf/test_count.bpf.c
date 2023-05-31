@@ -28,7 +28,7 @@ int count_open(struct trace_event_raw_sys_enter *ctx)
 //  if(value)
 //  {
 //    bpf_map_update_elem(&values, key, 1, BPF_ANY);
-    bpf_printk("count: %d", *value);
+    bpf_printk("key: %d, count: %d", key, value);
 //  } else {
 //    bpf_map_update_elem(&values, key, 1, BPF_ANY);
 //  }
