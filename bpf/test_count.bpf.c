@@ -25,13 +25,13 @@ int count_open(struct trace_event_raw_sys_enter *ctx)
 {
   u32 key = 0;
   u64 *value = bpf_map_lookup_elem(&values, &key);
-//  if(value)
-//  {
-//    bpf_map_update_elem(&values, key, 1, BPF_ANY);
+  if(!value)
+  {
+    bpf_map_update_elem(&values, key, 1, BPF_ANY);
     bpf_printk("key: %d, count: %d", key, value);
-//  } else {
-//    bpf_map_update_elem(&values, key, 1, BPF_ANY);
-//  }
+  } else {
+    bpf_map_update_elem(&values, key, 1, BPF_ANY);
+  }
 
   return 0;
 }
