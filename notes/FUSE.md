@@ -72,7 +72,54 @@ struct fuse_out_header {
 
 响应头后面紧跟响应体（如果有），如果错误码不为 0，则不应该包含响应体。具体如何处理响应体与处理请求体类似，就不再赘述。
 
+## 执行过程
+
+下图显示了文件系统操作（以unlink为例）是如何在FUSE中执行的[^3]。
+
+```tex
+|  "rm /mnt/fuse/file"               |  FUSE filesystem daemon
+|                                    |
+|                                    |  >sys_read()
+|                                    |    >fuse_dev_read()
+|                                    |      >request_wait()
+|                                    |        [sleep on fc->waitq]
+|                                    |
+|  >sys_unlink()                     |
+|    >fuse_unlink()                  |
+|      [get request from             |
+|       fc->unused_list]             |
+|      >request_send()               |
+|        [queue req on fc->pending]  |
+|        [wake up fc->waitq]         |        [woken up]
+|        >request_wait_answer()      |
+|          [sleep on req->waitq]     |
+|                                    |      <request_wait()
+|                                    |      [remove req from fc->pending]
+|                                    |      [copy req to read buffer]
+|                                    |      [add req to fc->processing]
+|                                    |    <fuse_dev_read()
+|                                    |  <sys_read()
+|                                    |
+|                                    |  [perform unlink]
+|                                    |
+|                                    |  >sys_write()
+|                                    |    >fuse_dev_write()
+|                                    |      [look up req in fc->processing]
+|                                    |      [remove from fc->processing]
+|                                    |      [copy write buffer to req]
+|          [woken up]                |      [wake up req->waitq]
+|                                    |    <fuse_dev_write()
+|                                    |  <sys_write()
+|        <request_wait_answer()      |
+|      <request_send()               |
+|      [add request to               |
+|       fc->unused_list]             |
+|    <fuse_unlink()                  |
+|  <sys_unlink()                     |
+```
+
 ## 参考文献
 
 [^1]: https://github.com/0voice/kernel_awsome_feature/blob/main/%E8%AF%A6%E8%A7%A3%20FUSE%20%E7%94%A8%E6%88%B7%E6%80%81%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F.md
 [^2]: https://zhuanlan.zhihu.com/p/143256077?utm_source=qq&utm_medium=social&utm_oi=730740411601014784
+[^3]: https://www.kernel.org/doc/html/next/filesystems/fuse.html
