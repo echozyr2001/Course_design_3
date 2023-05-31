@@ -6,3 +6,4 @@ c_fuse/oufs
 rootfs.*
 .DS_Store
 *.o
+*.json
