@@ -1,6 +1,7 @@
 fs/
 linux/
 .vscode/
+c_fuse/oufs
 
 rootfs.*
 .DS_Store
