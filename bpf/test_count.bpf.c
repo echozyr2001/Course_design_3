@@ -21,7 +21,7 @@ struct {
 } values SEC(".maps");
 
 SEC("tracepoint/syscalls/sys_enter_open")
-int count_open(void *args)
+int count_open(struct trace_event_raw_sys_enter *ctx)
 {
   u32 key = 0;
   u64 *value = bpf_map_lookup_elem(&values, &key);
