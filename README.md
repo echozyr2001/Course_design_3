@@ -105,7 +105,7 @@ $ sudo chroot fs
 # 更新并安装需要的软件与依赖
 (qemu)$ apt update
 (qemu)$ apt upgrade
-(qemu)$ apt install libfuse-dev pkg-config gcc make neovim sudo -y
+(qemu)$ apt install libfuse-dev pkg-config clang llvm gcc make neovim sudo -y
 # 退出
 (qemu)$ exit
 # 卸载文件系统
@@ -168,3 +168,4 @@ $ gdb ./linux/vmlinux # 加载程序
 - [ ] gdb加载脚本需要特殊处理，参考这里 https://elinux.org/images/f/f0/Bingham.pdf。或在~/.config/gdb/gdbinit 中添加
 - [ ] 虚拟机环境中可能还有依赖需要安装
 - [ ] 宿主机环境中可能还有依赖需要安装
+- [ ] 确定eBPF钩子函数
