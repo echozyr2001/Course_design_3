@@ -5,33 +5,24 @@
 
 char LICENSE[] SEC("license") = "Dual BSD/GPL";
 
-#define MAX_ENTRIES (2 << 16)
-
-typedef struct lookup_attr_key {
-    /* node id */
-    uint64_t nodeid;
-} lookup_attr_key_t;
-
-typedef struct lookup_attr_value {
-	uint32_t stale;
-	/* node attr */
-  //  struct fuse_attr_out out;
-} lookup_attr_val_t;
-
-/* number of entries in hash lookup table */
-
-struct {
-	__uint(type, BPF_MAP_TYPE_HASH);
-	__type(key, lookup_attr_key_t);
-	__type(value, lookup_attr_val_t);
-	__uint(max_entries, MAX_ENTRIES);
-} attr_map SEC(".maps");
-
-SEC("kprobe/fuse_getattr")
+SEC("kprobe/do_unlinkat")
 int BPF_KPROBE(do_unlinkat, int dfd, struct filename *name)
 {
-	 lookup_attr_key_t key = {0};
-	 lookup_attr_val_t *attr = bpf_map_lookup_elem(&attr_map, &key);
-	bpf_printk("key: %d", *key);	
+ pid_t pid;
+ const char *filename;
+
+ pid = bpf_get_current_pid_tgid() >> 32;
+ filename = BPF_CORE_READ(name, name);
+ bpf_printk("KPROBE ENTRY pid = %d, filename = %s\n", pid, filename);
+ return 0;
+}
+
+SEC("kretprobe/do_unlinkat")
+int BPF_KRETPROBE(do_unlinkat_exit, long ret)
+{
+ pid_t pid;
+
+ pid = bpf_get_current_pid_tgid() >> 32;
+ bpf_printk("KPROBE EXIT: pid = %d, ret = %ld\n", pid, ret);
  return 0;
 }
