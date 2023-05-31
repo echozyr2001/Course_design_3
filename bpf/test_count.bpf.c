@@ -24,7 +24,7 @@ SEC("tracepoint/syscalls/sys_enter_open")
 int count_open(struct syscall *args)
 {
   u32 key = 0;
-  u64 *value = bpf_map_lookup_elem(map, &key);
+  u64 *value = bpf_map_lookup_elem(&values, &key);
   if(value)
   {
     bpf_map_update_elem(&values, key, 1, BPF_ANY);
