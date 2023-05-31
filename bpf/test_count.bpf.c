@@ -32,6 +32,8 @@ int count_open(struct trace_event_raw_sys_enter *ctx)
   } else {
     bpf_map_update_elem(&values, key, 1, BPF_ANY);
   }
+
+  return 0;
 }
 
 char LICENSE[] SEC("license") = "Dual BSD/GPL";
