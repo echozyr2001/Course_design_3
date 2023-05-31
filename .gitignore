@@ -4,3 +4,4 @@ linux/
 
 rootfs.*
 .DS_Store
+*.o
