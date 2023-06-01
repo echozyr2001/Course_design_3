@@ -27,13 +27,9 @@ struct {
 
 
 SEC("kprobe/do_fuse_getattr")
-int BPF_KPROBE(do_getattr, int dfd, struct filename *name)
+int BPF_KPROBE(do_getattr, int dfd, lookup_attr_key_t *key)
 {
- pid_t pid;
- const char *filename;
-
- pid = bpf_get_current_pid_tgid() >> 32;
- filename = BPF_CORE_READ(name, name);
- bpf_printk("KPROBE ENTRY pid = %d, filename = %s\n", pid, filename);
- return 0;
+  lookup_attr_val_t *attr = bpf_map_lookup_elem(&attr_map, key);
+  bpf_map_update_elem(&attr_map, key, attr, BPF_ANY);
+  return 0;
 }
